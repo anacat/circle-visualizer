@@ -4,6 +4,7 @@
     {
         _Points ("Number of Points", Range(0, 256)) = 3
         _Product ("Product", Range(1, 256)) = 2
+        _Color ("Color", Color) = (1,1,1,1)
     }
     SubShader
     {
@@ -14,8 +15,6 @@
 			"RenderType"="Transparent" 
 			"PreviewType"="Plane"
         }
-
-        LOD 100
 
         Blend SrcAlpha OneMinusSrcAlpha
 
@@ -43,6 +42,8 @@
             uniform int _Points;
             int _Product;
             float _MyTime;
+            fixed4 _Color;
+            fixed _ShowCircle;
 
             float DrawLine(float2 p1, float2 p2, float2 uv, float a)
             {
@@ -56,14 +57,14 @@
                 float duv = distance(p1, uv);
 
                 //if point is on line, according to dist, it should match current uv 
-                r = 1 - floor(1 - (a*one_px) + distance (lerp(p1, p2, clamp(duv/d, 0, 1)),  uv));
+                r = 1 - floor(1 - (a*one_px) + distance (lerp(p1, p2, clamp(duv/d, 0, 1)), uv));
                     
                 return r;
             }
 
             float DrawCircle(float2 p, float d, float2 uv)
             {
-                return (distance(p, uv) <= d && distance(p, uv) >= d - 0.01) ? 1. : 0.;
+                return (distance(p, uv) <= d && distance(p, uv) >= d - 0.002) ? 1. : 0.;
             }
 
             float DivideCircle(int num, float2 uv, uint n){
@@ -99,8 +100,8 @@
 
             fixed4 frag (v2f i) : SV_Target
             {
-                int num = lerp(1, 200, _MyTime);
-                int num2 = lerp(1, 110, _MyTime);
+                fixed points = lerp(2, _Points, _MyTime);
+                fixed product = lerp(2, _Product, _MyTime);
 
                 float2 center_uv = float2(i.uv.x - 0.5, i.uv.y - 0.5);
 
@@ -112,9 +113,9 @@
                 float linha = DrawLine(p1, p2, center_uv, 1);
                 float dots = DrawCircle(p1, 0.005, center_uv) + DrawCircle(p2, 0.005, center_uv);
                 
-                dots = DivideCircle(num, center_uv, num2);
+                dots = DivideCircle(points, center_uv, product);
 
-                float4 color = float4(0, dots, 0, 1);
+                fixed4 color = lerp(dots, dots + circle, _ShowCircle) * _Color;
 
                 return color;
             }

@@ -25,6 +25,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Angle: 3.29
-    - _Points: 6.28
-    - _Product: 49
-    m_Colors: []
+    - _Points: 50
+    - _Product: 20
+    m_Colors:
+    - _Color: {r: 1, g: 0.82978714, b: 0, a: 1}
